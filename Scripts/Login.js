@@ -1,6 +1,8 @@
-// ====== تنظیمات: آدرس API را اینجا قرار بده ======
-const API_REGISTER_URL = "https://your-backend.com/api/register"; // <-- آدرس خودت را بگذار
+// import { answers } from "./Data";
 
+// import {answers} from './Data.js'
+let enteredanswers = JSON.parse(localStorage.getItem("answers"));
+//  export let answers = [];
 // ====== کمک‌رسان‌های اعتبارسنجی ======
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -20,6 +22,7 @@ function passwordScore(pw) {
 // توجه: در HTMLی که فرستادی فیلد "firstName" وجود نداشت؛ از فیلد lastName به عنوان "نام کامل" استفاده می‌کنیم.
 const form = document.getElementById("registerForm");
 const nameField = document.getElementById("lastName"); // نام کامل در HTMLتو
+const phonenumber = document.getElementById("number");
 const email = document.getElementById("email");
 const team = document.getElementById("team");
 const password = document.getElementById("password");
@@ -64,7 +67,8 @@ function validateForm() {
 
   // نام کامل (از فیلد lastName در HTML استفاده می‌کنیم)
   if (!nameField || !nameField.value.trim()) {
-    if (err.name) err.name.textContent = "لطفاً نام و نام خانوادگی را وارد کنید.";
+    if (err.name)
+      err.name.textContent = "لطفاً نام و نام خانوادگی را وارد کنید.";
     ok = false;
   }
 
@@ -81,7 +85,8 @@ function validateForm() {
   const pw = (password && password.value) || "";
   const score = passwordScore(pw);
   if (pw.length < 8 || score < 3) {
-    if (err.password) err.password.textContent = "رمز عبور ضعیف است. شرایط را رعایت کنید.";
+    if (err.password)
+      err.password.textContent = "رمز عبور ضعیف است. شرایط را رعایت کنید.";
     ok = false;
   }
 
@@ -92,6 +97,8 @@ function validateForm() {
 if (form) {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    // console.log(enteredanswers.length);
+
     clearErrors();
 
     if (!validateForm()) {
@@ -101,11 +108,14 @@ if (form) {
     }
 
     const payload = {
-      name: nameField ? nameField.value.trim() : "",
+      // name: nameField ? nameField.value.trim() : "",
+      mobile: phonenumber ? phonenumber.value.trim() : "",
       email: email ? email.value.trim() : "",
-      team: team ? team.value.trim() : "",
-      password: password ? password.value : "",
+      answers: enteredanswers,
+      // password: password ? password.value : "",
     };
+    console.log(enteredanswers);
+    console.log(payload);
 
     // وضعیت ارسال
     submitBtn.disabled = true;
@@ -114,11 +124,14 @@ if (form) {
     formStatus.className = "status";
 
     try {
-      const res = await fetch(API_REGISTER_URL, {
+      const res = await fetch("https://raah.work/api/mbti/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+      console.log("Status:", res.status);
+      const responseData = await res.json().catch(() => null);
+      console.log("Response from server:", responseData);
 
       if (!res.ok) {
         let msg = "خطا در ثبت‌نام. لطفاً دوباره تلاش کنید.";
@@ -135,6 +148,9 @@ if (form) {
         submitBtn.textContent = "ثبت نام";
         return;
       }
+      console.log(savedAnswers);
+      console.log(payload);
+      // localStorage.removeItem("answers");
 
       // موفقیت
       formStatus.textContent = "ثبت‌نام با موفقیت انجام شد ✅";
@@ -148,7 +164,8 @@ if (form) {
         submitBtn.textContent = "ثبت نام";
       }, 1500);
     } catch (networkErr) {
-      formStatus.textContent = "خطا در ارتباط با سرور. اتصال اینترنت را بررسی کنید.";
+      formStatus.textContent =
+        "خطا در ارتباط با سرور. اتصال اینترنت را بررسی کنید.";
       formStatus.classList.add("error");
       submitBtn.disabled = false;
       submitBtn.textContent = "ثبت نام";

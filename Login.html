@@ -12,10 +12,8 @@
             <img src="./public/Images/rah.png" alt="">
         </div>
       <h1>ایجاد حساب کاربری</h1>
-
       <form id="registerForm" novalidate>
         <div class="row">
-          <div class="col-2">
             <input
               id="lastName"
               name="lastName"
@@ -25,7 +23,7 @@
               placeholder="نام و نام خانوادگی"
             />
             <div class="error" id="err-lastName" aria-live="polite"></div>
-          </div>
+          
         </div>
 
         <div class="row">
@@ -37,6 +35,19 @@
               autocomplete="email"
               required
               placeholder="ایمیل"
+            />
+            <div class="error" id="err-email" aria-live="polite"></div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="full">
+            <input
+              id="number"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+              placeholder="شماره همراه"
             />
             <div class="error" id="err-email" aria-live="polite"></div>
           </div>
@@ -80,6 +91,6 @@
       </form>
     </div>
 
-    <script src="./Scripts/Login.js"></script>
+    <script type="module" src="./Scripts/Login.js"></script>
   </body>
 </html>
