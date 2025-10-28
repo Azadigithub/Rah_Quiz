@@ -1,5 +1,10 @@
+@font-face {
+    font-family: iran;
+    src: url(../public/Fonts/IRANSansX-Medium.ttf);
+}
+
 body {
-  font-family: sans-serif;
+  font-family: iran;
   direction: rtl;
   /* background: #528fb3; */
   background-image: linear-gradient(
@@ -14,10 +19,10 @@ body {
   align-items: center;
   height: 100vh;
 }
-.image {
+.image-con {
   width: 100px;
 }
-.imageimg {
+.image-con>img {
   width: 100%;
   height: 100%;
   object-fit: contain;
