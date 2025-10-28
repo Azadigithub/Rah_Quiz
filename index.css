@@ -1,0 +1,48 @@
+@font-face {
+    font-family: iran;
+    src: url(./public/Fonts/IRANSansX-Medium.ttf);
+}
+body{
+     /* background-color: lightskyblue; */
+}
+a{
+    text-decoration: none;
+    text-align: center;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: iran;
+}
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+ 
+  width: 90%;
+  height: 100vh;
+  gap: 25px;
+  margin: 0 auto;
+}
+.image-container {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.image-container > img {
+  width: 100%;
+  height: 100%;
+}
+.quizbutton {
+    max-width: 500px;
+  width: 90%;
+  padding: 7px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 20px;
+  background-color: #1976d2;
+}
