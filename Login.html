@@ -8,22 +8,33 @@
   </head>
   <body>
     <div class="card" role="main">
-        <div class="image-con">
-            <img src="./public/Images/rah.png" alt="">
-        </div>
-      <h1>ایجاد حساب کاربری</h1>
+      <div class="image-con">
+        <img src="./public/Images/rah.png" alt="" />
+      </div>
+      <h1>پیش ثبت نام</h1>
       <form id="registerForm" novalidate>
         <div class="row">
+          <div class="full">
             <input
-              id="lastName"
-              name="lastName"
+              id="team"
+              name="team"
               type="text"
-              autocomplete="family-name"
               required
-              placeholder="نام و نام خانوادگی"
+              placeholder="نام تیم یا شرکت"
             />
-            <div class="error" id="err-lastName" aria-live="polite"></div>
-          
+            <div class="error" id="err-team" aria-live="polite"></div>
+          </div>
+        </div>
+        <div class="row">
+          <input
+            id="lastName"
+            name="lastName"
+            type="text"
+            autocomplete="family-name"
+            required
+            placeholder="نام و نام خانوادگی"
+          />
+          <div class="error" id="err-lastName" aria-live="polite"></div>
         </div>
 
         <div class="row">
@@ -50,37 +61,6 @@
               placeholder="شماره همراه"
             />
             <div class="error" id="err-email" aria-live="polite"></div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="full">
-            <input
-              id="team"
-              name="team"
-              type="text"
-              required
-              placeholder="نام تیم یا شرکت"
-            />
-            <div class="error" id="err-team" aria-live="polite"></div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="full">
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autocomplete="new-password"
-              required
-              placeholder="رمز عبور"
-            />
-            <div class="pw-meter" aria-hidden="true"><i id="pwBar"></i></div>
-            <div class="helper" id="pwHelper">
-              حداقل 8 کاراکتر. بهتر است شامل حروف بزرگ، کوچک و عدد باشد.
-            </div>
-            <div class="error" id="err-password" aria-live="polite"></div>
           </div>
         </div>
 

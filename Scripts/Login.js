@@ -1,9 +1,10 @@
 // import { answers } from "./Data";
 
 // import {answers} from './Data.js'
+
 let enteredanswers = JSON.parse(localStorage.getItem("answers"));
+// let Mobilenumber = JSON.parse(localStorage.getItem("answers"));
 //  export let answers = [];
-// ====== کمک‌رسان‌های اعتبارسنجی ======
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -18,15 +19,13 @@ function passwordScore(pw) {
   return score; // 0..5
 }
 
-// ====== المان‌ها ======
-// توجه: در HTMLی که فرستادی فیلد "firstName" وجود نداشت؛ از فیلد lastName به عنوان "نام کامل" استفاده می‌کنیم.
 const form = document.getElementById("registerForm");
-const nameField = document.getElementById("lastName"); // نام کامل در HTMLتو
+const nameField = document.getElementById("lastName");
 const phonenumber = document.getElementById("number");
 const email = document.getElementById("email");
 const team = document.getElementById("team");
-const password = document.getElementById("password");
 const submitBtn = document.getElementById("submitBtn");
+
 const formStatus = document.getElementById("formStatus");
 
 const err = {
@@ -38,20 +37,6 @@ const err = {
 
 const pwBar = document.getElementById("pwBar");
 
-// ====== به‌روزرسانی نوار قدرت رمز عبور (اگر وجود داشته باشد) ======
-if (password && pwBar) {
-  password.addEventListener("input", () => {
-    const s = passwordScore(password.value);
-    const pct = Math.min(100, (s / 5) * 100);
-    pwBar.style.width = pct + "%";
-    pwBar.className = ""; // reset کلاس‌ها
-    if (s <= 2) pwBar.classList.add("pw-weak");
-    else if (s <= 4) pwBar.classList.add("pw-medium");
-    else pwBar.classList.add("pw-strong");
-  });
-}
-
-// ====== پاک‌سازی خطاها ======
 function clearErrors() {
   Object.values(err).forEach((el) => {
     if (el) el.textContent = "";
@@ -60,12 +45,10 @@ function clearErrors() {
   formStatus.className = "status";
 }
 
-// ====== اعتبارسنجی فرم قبل از ارسال ======
 function validateForm() {
   clearErrors();
   let ok = true;
 
-  // نام کامل (از فیلد lastName در HTML استفاده می‌کنیم)
   if (!nameField || !nameField.value.trim()) {
     if (err.name)
       err.name.textContent = "لطفاً نام و نام خانوادگی را وارد کنید.";
@@ -82,18 +65,9 @@ function validateForm() {
     ok = false;
   }
 
-  const pw = (password && password.value) || "";
-  const score = passwordScore(pw);
-  if (pw.length < 8 || score < 3) {
-    if (err.password)
-      err.password.textContent = "رمز عبور ضعیف است. شرایط را رعایت کنید.";
-    ok = false;
-  }
-
   return ok;
 }
 
-// ====== ارسال فرم ======
 if (form) {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -107,15 +81,27 @@ if (form) {
       return;
     }
 
+    // const payload = {
+    //   // name: nameField ? nameField.value.trim() : "",
+    //   mobile: phonenumber ? phonenumber.value.trim() : "",
+    //   email: email ? email.value.trim() : "",
+    //   answers: enteredanswers,
+    //   // password: password ? password.value : "",
+    // };
+
     const payload = {
-      // name: nameField ? nameField.value.trim() : "",
       mobile: phonenumber ? phonenumber.value.trim() : "",
       email: email ? email.value.trim() : "",
       answers: enteredanswers,
-      // password: password ? password.value : "",
+      // answers: [
+      //   { question_id: 1, value: "E" },
+      //   { question_id: 2, value: "I" },
+      // ],
     };
-    console.log(enteredanswers);
-    console.log(payload);
+    const phone = payload.mobile;
+    // console.log(phone);
+    // localStorage.setItem("mobile", JSON.stringify(phone))
+    // console.log(payload);
 
     // وضعیت ارسال
     submitBtn.disabled = true;
@@ -148,16 +134,20 @@ if (form) {
         submitBtn.textContent = "ثبت نام";
         return;
       }
+
       console.log(savedAnswers);
       console.log(payload);
       // localStorage.removeItem("answers");
 
-      // موفقیت
       formStatus.textContent = "ثبت‌نام با موفقیت انجام شد ✅";
       formStatus.classList.add("success");
       submitBtn.textContent = "انجام شد";
       form.reset();
       if (pwBar) pwBar.style.width = "0%";
+      localStorage.setItem("mobile", JSON.stringify(phone));
+      setTimeout(() => {
+        window.location.assign("/Resault.html");
+      }, 5000);
 
       setTimeout(() => {
         submitBtn.disabled = false;
@@ -165,22 +155,104 @@ if (form) {
       }, 1500);
     } catch (networkErr) {
       formStatus.textContent =
-        "خطا در ارتباط با سرور. اتصال اینترنت را بررسی کنید.";
-      formStatus.classList.add("error");
+        // "خطا در ارتباط با سرور. اتصال اینترنت را بررسی کنید.";
+        formStatus.classList.add("error");
       submitBtn.disabled = false;
       submitBtn.textContent = "ثبت نام";
     }
   });
 }
 
-// ====== پاک کردن خطا هنگام تایپ ======
-const inputList = [nameField, email, team, password].filter(Boolean);
+const inputList = [nameField, email, team].filter(Boolean);
 inputList.forEach((el) => {
   el.addEventListener("input", () => {
-    // map از قبل با کلیدهای name,email,team,password تعریف شده
     if (el.id === "lastName" && err.name) err.name.textContent = "";
     if (el.id === "email" && err.email) err.email.textContent = "";
     if (el.id === "team" && err.team) err.team.textContent = "";
-    if (el.id === "password" && err.password) err.password.textContent = "";
   });
 });
+
+// form.addEventListener("submit", async (e) => {
+//   e.preventDefault();
+//   // console.log(enteredanswers.length);
+
+//   clearErrors();
+
+//   if (!validateForm()) {
+//     // formStatus.textContent = "لطفاً خطاها را اصلاح کنید.";
+//     formStatus.classList.add("error");
+//     return;
+//   }
+
+//   const payload = {
+//     mobile: "0914453443444289",
+//     email: "user@e44vdfvf.com",
+//     answers: [
+//       { question_id: 1, value: "E" },
+//       { question_id: 2, value: "I" },
+//       { question_id: 3, value: "E" },
+//       { question_id: 4, value: "I" },
+//       { question_id: 5, value: "E" },
+//       { question_id: 6, value: "I" },
+//       { question_id: 7, value: "E" },
+//       { question_id: 8, value: "I" },
+//       { question_id: 9, value: "E" },
+//       { question_id: 10, value: "I" },
+//     ],
+//   };
+//   console.log(enteredanswers);
+//   console.log(payload);
+
+//   // وضعیت ارسال
+//   submitBtn.disabled = true;
+//   submitBtn.textContent = "در حال ارسال...";
+//   formStatus.textContent = "";
+//   formStatus.className = "status";
+
+//   try {
+//     const res = await fetch("https://raah.work/api/mbti/submit", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify(payload),
+//     });
+//     console.log("Status:", res.status);
+//     const responseData = await res.json().catch(() => null);
+//     console.log("Response from server:", responseData);
+
+//     if (!res.ok) {
+//       let msg = "خطا در ثبت‌نام. لطفاً دوباره تلاش کنید.";
+//       try {
+//         const j = await res.json();
+//         if (j && j.message) msg = j.message;
+//       } catch (parseErr) {
+//         // ignore
+//       }
+
+//       formStatus.textContent = msg;
+//       formStatus.classList.add("error");
+//       submitBtn.disabled = false;
+//       submitBtn.textContent = "ثبت نام";
+//       return;
+//     }
+//     console.log(savedAnswers);
+//     console.log(payload);
+//     // localStorage.removeItem("answers");
+
+//     formStatus.textContent = "ثبت‌نام با موفقیت انجام شد ✅";
+//     formStatus.classList.add("success");
+//     submitBtn.textContent = "انجام شد";
+//     form.reset();
+//     if (pwBar) pwBar.style.width = "0%";
+
+//     setTimeout(() => {
+//       submitBtn.disabled = false;
+//       submitBtn.textContent = "ثبت نام";
+//     }, 1500);
+//   } catch (networkErr) {
+//     formStatus.textContent =
+//       "خطا در ارتباط با سرور. اتصال اینترنت را بررسی کنید.";
+//     formStatus.classList.add("error");
+//     submitBtn.disabled = false;
+//     submitBtn.textContent = "ثبت نام";
+//   }
+// });

@@ -38,23 +38,47 @@ const SAMPLE = {
     "تغذیه کنجکاوی: هر شش ماه یک مهارت جدید یاد بگیرید، مثل زبان برنامه‌نویسی یا اصول بورس.",
   ],
 };
+const phone = JSON.parse(localStorage.getItem("mobile"));
+const payload = { mobile: String(phone) };
+console.log(phone);
 
-// --- تابعی که داده را بارگذاری می‌کند ---
+let Ress = {};
 async function loadData() {
-  // سعی می‌کنیم از بک‌اند JSON بگیریم؛ اگر failed شد از SAMPLE استفاده می‌کنیم
   try {
-    const res = await fetch("/api/profile", { cache: "no-store" });
+    const res = await fetch("https://raah.work/api/mbti/result", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
     if (!res.ok) throw new Error("no endpoint or non-200");
-    const json = await res.json();
-    return json;
+
+    const result = await res.json();
+    console.log(" API:", result);
+    Ress = result;
+    console.log("res:", Ress);
+
+    Object.assign(Response, result);
+
+    return result;
   } catch (e) {
     console.warn("بارگذاری از API ممکن نیست، استفاده از نمونه محلی.", e);
+
+    Object.assign(Response, SAMPLE);
+
     return SAMPLE;
   }
 }
 
-// --- توابع کمکی برای رندر کردن ---
+(async function init() {
+  const data = await loadData();
+  render(data);
+})();
+
+console.log("دیتای ذخیره شده:", Response);
+
 function clearChildren(el) {
+  if (!el) return;
   while (el.firstChild) el.removeChild(el.firstChild);
 }
 
@@ -71,31 +95,50 @@ function createCard(title, text, cls = "card") {
 }
 
 function render(data) {
-  // Header / sidebar
-  document.getElementById("overviewShort").textContent =
-    data.overview.slice(0, 72) + (data.overview.length > 72 ? "…" : "");
-  document.getElementById("headline").textContent =
-    (data.general_characteristics && data.general_characteristics[0]) ||
-    "صنعتگر ماهر";
-  document.getElementById("tagline").textContent =
-    (data.general_characteristics && data.general_characteristics[1]) || "";
-  document.getElementById("selfCareHint").textContent =
-    (data.self_care && data.self_care[0]) || "";
+  const content = data.text ? data.text : data;
 
-  // avatar letters (take initials)
-  const avatar = document.getElementById("avatar");
-  const initials = (document.getElementById("headline").textContent || "")
-    .split(" ")
-    .slice(0, 2)
-    .map((s) => s[0] || "")
-    .join("");
-  //   avatar.textContent = initials || "";
+  // MBTI type
+  const mbtiEl = document.getElementById("mbtiType");
+  if (mbtiEl) mbtiEl.textContent = data.mbti || "نامشخص";
+
+  // overview
+  const overviewEl = document.getElementById("overviewShort");
+  if (overviewEl) {
+    overviewEl.textContent =
+      (content.overview ? content.overview.slice(0, 72) : "") +
+      (content.overview && content.overview.length > 72 ? "…" : "");
+  }
+
+  // general characteristics
+  const headlineEl = document.getElementById("headline");
+  if (headlineEl) {
+    headlineEl.textContent =
+      (content.general_characteristics && content.general_characteristics[0]) ||
+      "تیپ شخصیتی";
+  }
+
+  const taglineEl = document.getElementById("tagline");
+  if (taglineEl) {
+    taglineEl.textContent =
+      (content.general_characteristics && content.general_characteristics[1]) ||
+      "";
+  }
+
+  // self care hint
+  const selfCareHintEl = document.getElementById("selfCareHint");
+  if (selfCareHintEl)
+    selfCareHintEl.textContent =
+      (content.self_care && content.self_care[0]) || "";
+
+  // avatar
+  const avatarEl = document.getElementById("avatar");
+  if (avatarEl) avatarEl.textContent = data.mbti || "";
 
   // strengths
   const sC = document.getElementById("strengthsContainer");
   clearChildren(sC);
-  if (Array.isArray(data.strengths)) {
-    data.strengths.forEach((s, i) => {
+  if (Array.isArray(content.strengths) && sC) {
+    content.strengths.forEach((s, i) => {
       const card = createCard("قدرت #" + (i + 1), s);
       card.classList.add("strength");
       sC.appendChild(card);
@@ -105,14 +148,11 @@ function render(data) {
   // weaknesses
   const wC = document.getElementById("weaknessesContainer");
   clearChildren(wC);
-  if (Array.isArray(data.weaknesses)) {
-    data.weaknesses.forEach((w, i) => {
+  if (Array.isArray(content.weaknesses) && wC) {
+    content.weaknesses.forEach((w, i) => {
       const li = document.createElement("div");
       li.className = "list-item weak";
-      li.innerHTML = `<div style="min-width:40px"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M12 2v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/></svg></div>
-                          <div><b>ضعف ${i + 1}</b>
-                          <div class="hint">${w}</div>
-                          </div>`;
+      li.innerHTML = `<b>ضعف ${i + 1}</b><div class="hint">${w}</div>`;
       wC.appendChild(li);
     });
   }
@@ -120,8 +160,8 @@ function render(data) {
   // career strategies
   const cC = document.getElementById("careerContainer");
   clearChildren(cC);
-  if (Array.isArray(data.career_strategies)) {
-    data.career_strategies.forEach((c, i) => {
+  if (Array.isArray(content.career_strategies) && cC) {
+    content.career_strategies.forEach((c, i) => {
       const card = createCard("استراتژی " + (i + 1), c);
       card.classList.add("career");
       cC.appendChild(card);
@@ -131,59 +171,87 @@ function render(data) {
   // work relations
   const rC = document.getElementById("relationsContainer");
   clearChildren(rC);
-  if (Array.isArray(data.work_relations)) {
-    data.work_relations.forEach((r, i) => {
-      const key = Object.keys(r)[0] || "rel" + i;
+  if (Array.isArray(content.work_relations) && rC) {
+    content.work_relations.forEach((r, i) => {
+      const key = Object.keys(r)[0] || "ارتباط " + (i + 1);
       const item = document.createElement("div");
       item.className = "list-item";
-      item.innerHTML = `<div style="min-width:40px"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.2" opacity="0.7"/></svg></div>
-                            <div><b>${key.replace(
-                              /_/g,
-                              " "
-                            )}</b><div class="hint">${r[key]}</div></div>`;
+      item.innerHTML = `<b>${key.replace(/_/g, " ")}</b><div class="hint">${
+        r[key]
+      }</div>`;
       rC.appendChild(item);
     });
   }
 
   // self care
-  document.getElementById("selfCareText").innerHTML = (data.self_care || [])
-    .map((s, i) => `• ${s}`)
-    .join("<br>");
+  const selfCareTextEl = document.getElementById("selfCareText");
+  if (selfCareTextEl) {
+    selfCareTextEl.innerHTML = (content.self_care || [])
+      .map((s) => `• ${s}`)
+      .join("<br>");
+  }
 
   // raw JSON
-  document.getElementById("rawJSON").textContent = JSON.stringify(
-    data,
-    null,
-    2
-  );
+  const rawJSONEl = document.getElementById("rawJSON");
+  if (rawJSONEl) rawJSONEl.textContent = JSON.stringify(content, null, 2);
+
+  // ✅ درصدها
+  const percContainer = document.getElementById("percentagesContainer");
+  clearChildren(percContainer);
+  if (data.percentages && percContainer) {
+    const labels = {
+      EI: "برون‌گرایی (E) ↔ درون‌گرایی (I)",
+      SN: "حسی (S) ↔ شهودی (N)",
+      TF: "تفکری (T) ↔ احساسی (F)",
+      JP: "قضاوتی (J) ↔ ادراکی (P)",
+    };
+
+    Object.keys(data.percentages).forEach((key) => {
+      const { percent, type } = data.percentages[key]; // فرض: {percent: 65, type: "E"}
+      const row = document.createElement("div");
+      row.className = "mbti-bar";
+      row.innerHTML = `
+        <div class="bar-label">${labels[key] || key}</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${percent}%;"></div>
+        </div>
+        <div class="bar-value">${type} (${percent}%)</div>
+      `;
+      percContainer.appendChild(row);
+    });
+  }
 }
 
 // --- small UX features ---
-document.getElementById("refreshBtn").addEventListener("click", async () => {
-  document.getElementById("refreshBtn").textContent = "در حال بارگذاری…";
-  const data = await loadData();
-  render(data);
-  document.getElementById("refreshBtn").textContent = "بارگذاری";
-});
+const refreshBtn = document.getElementById("refreshBtn");
+if (refreshBtn) {
+  refreshBtn.addEventListener("click", async () => {
+    refreshBtn.textContent = "در حال بارگذاری…";
+    const data = await loadData();
+    render(data);
+    refreshBtn.textContent = "بارگذاری";
+  });
+}
 
-document.getElementById("copyBtn").addEventListener("click", () => {
-  const txt = document.getElementById("rawJSON").textContent;
-  navigator.clipboard
-    ?.writeText(txt)
-    .then(() => {
-      const old = document.getElementById("copyBtn").textContent;
-      document.getElementById("copyBtn").textContent = "کپی شد";
-      setTimeout(
-        () => (document.getElementById("copyBtn").textContent = old),
-        1400
-      );
-    })
-    .catch(() => alert("مرورگر شما اجازه‌ی کپی ندارد."));
-});
+const copyBtn = document.getElementById("copyBtn");
+if (copyBtn) {
+  copyBtn.addEventListener("click", () => {
+    const txt = document.getElementById("rawJSON")?.textContent;
+    if (!txt) return;
+    navigator.clipboard
+      ?.writeText(txt)
+      .then(() => {
+        const old = copyBtn.textContent;
+        copyBtn.textContent = "کپی شد";
+        setTimeout(() => (copyBtn.textContent = old), 1400);
+      })
+      .catch(() => alert("مرورگر شما اجازه‌ی کپی ندارد."));
+  });
+}
 
 function toggleAccordion(id) {
   const node = document.getElementById(id);
-  node.classList.toggle("open");
+  if (node) node.classList.toggle("open");
 }
 
 // --- اجرا هنگام لود ---
@@ -191,9 +259,9 @@ function toggleAccordion(id) {
   const data = await loadData();
   render(data);
 
-  // باز شدن خودکار raw در موبایل اگر لازم باشد
   if (window.innerWidth < 520) {
-    document.getElementById("rawAccordion").classList.add("open");
+    const rawAccordion = document.getElementById("rawAccordion");
+    if (rawAccordion) rawAccordion.classList.add("open");
   }
 })();
 

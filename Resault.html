@@ -1,85 +1,104 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>نمایش پروفایل عملی — IndustryCraft</title>
-  <link rel="stylesheet" href="./Styles/Resault.css">
-
-
-</head>
-<body>
-  <div class="container" aria-live="polite">
-    <aside class="sidebar" role="complementary">
-      <div class="title">
-        <div>
-          <div class="avatar" id="avatar">صن</div>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>نمایش پروفایل عملی — IndustryCraft</title>
+    <link rel="stylesheet" href="./Styles/Resault.css" />
+  </head>
+  <body>
+    <div class="container" aria-live="polite">
+      <aside class="sidebar" role="complementary">
+        <div class="title">
+          <div>
+            <div class="avatar" id="avatar">صن</div>
+          </div>
+          <div>
+            <div class="headline" id="headline">صنعتگر ماهر</div>
+            <div class="sub" id="tagline">
+              I / S / T / P — عملگرایی، مهارت فنی، استقلال
+            </div>
+          </div>
         </div>
-        <div>
-          <div class="headline" id="headline">صنعتگر ماهر</div>
-          <div class="sub" id="tagline">I / S / T / P — عملگرایی، مهارت فنی، استقلال</div>
+
+        <div class="meta-list" id="metaList">
+          <div class="chip">
+            <span>ویژگی کلی</span><small id="overviewShort">...</small>
+          </div>
+          <div class="chip">
+            <span>شیوه‌ی کار</span
+            ><small id="workStyle">درونگرا · حسی · تفکری · ادراکی</small>
+          </div>
+          <div class="chip">
+            <span>نکات مراقبتی</span
+            ><small id="selfCareHint">روزانه ورزش · هر 6 ماه مهارت جدید</small>
+          </div>
         </div>
-      </div>
 
-      <div class="meta-list" id="metaList">
-        <div class="chip"><span>ویژگی کلی</span><small id="overviewShort">...</small></div>
-        <div class="chip"><span>شیوه‌ی کار</span><small id="workStyle">درونگرا · حسی · تفکری · ادراکی</small></div>
-        <div class="chip"><span>نکات مراقبتی</span><small id="selfCareHint">روزانه ورزش · هر 6 ماه مهارت جدید</small></div>
-      </div>
-
-      <div class="cta">
-        <button class="btn" id="refreshBtn" title="بارگذاری مجدد">بارگذاری</button>
-        <button class="btn" id="copyBtn" title="کپی JSON">کپی JSON</button>
-      </div>
-
-      <footer>
-        <span class="tag">سبک عملی</span>
-        <small>قابل شخصی‌سازی</small>
-      </footer>
-    </aside>
-
-    <main class="main" role="main">
-      <section class="section">
-        <h3>قدرت‌ها <span style="font-size:12px;color:var(--muted);">(strengths)</span></h3>
-        <div class="card-grid" id="strengthsContainer">
-          <!-- cards inserted by JS -->
+        <div class="cta">
+          <button class="btn" id="refreshBtn" title="بارگذاری مجدد">
+            بارگذاری
+          </button>
+          <button class="btn" id="copyBtn" title="کپی JSON">کپی JSON</button>
         </div>
-      </section>
 
-      <section class="section">
-        <h3>ضعف‌ها <span style="font-size:12px;color:var(--muted);">(weaknesses)</span></h3>
-        <div class="list" id="weaknessesContainer"></div>
-      </section>
+        <footer>
+          <span class="tag">سبک عملی</span>
+          <small>قابل شخصی‌سازی</small>
+        </footer>
+      </aside>
 
-      <section class="section">
-        <h3>استراتژی‌های شغلی</h3>
-        <div class="card-grid" id="careerContainer"></div>
-      </section>
+      <main class="main" role="main">
+        <section class="section">
+          <h3>
+            قدرت‌ها
+            <span style="font-size: 12px; color: var(--muted)"
+              >(strengths)</span
+            >
+          </h3>
+          <div class="card-grid" id="strengthsContainer">
+            <!-- cards inserted by JS -->
+          </div>
+        </section>
 
-      <section class="section">
-        <h3>روابط کاری</h3>
-        <div class="list" id="relationsContainer"></div>
-      </section>
+        <section class="section">
+          <h3>
+            ضعف‌ها
+            <span style="font-size: 12px; color: var(--muted)"
+              >(weaknesses)</span
+            >
+          </h3>
+          <div class="list" id="weaknessesContainer"></div>
+        </section>
 
-      <section class="section">
-        <h3>مراقبت از خود</h3>
-        <div class="card" id="selfCare">
-          <p id="selfCareText"></p>
-        </div>
-      </section>
+        <section class="section">
+          <h3>استراتژی‌های شغلی</h3>
+          <div class="card-grid" id="careerContainer"></div>
+        </section>
 
-      <section class="section accordion" id="rawAccordion">
-        <!-- <div class="title-row" onclick="toggleAccordion('rawAccordion')">
+        <section class="section">
+          <h3>روابط کاری</h3>
+          <div class="list" id="relationsContainer"></div>
+        </section>
+
+        <section class="section">
+          <h3>مراقبت از خود</h3>
+          <div class="card" id="selfCare">
+            <p id="selfCareText"></p>
+          </div>
+        </section>
+
+        <section class="section accordion" id="rawAccordion">
+          <!-- <div class="title-row" onclick="toggleAccordion('rawAccordion')">
           <h3>داده خام (JSON)</h3>
           <div class="tag">نمایش/مخفی</div>
         </div> -->
-        <div class="content card">
-          <!-- <pre id="rawJSON" style="white-space:pre-wrap;overflow:auto;max-height:280px;font-size:13px"></pre> -->
-        </div>
-      </section>
-    </main>
-  </div>
-
-</body>
-<script src="./Scripts/Resault.js"></script>
+          <div class="content card">
+            <!-- <pre id="rawJSON" style="white-space:pre-wrap;overflow:auto;max-height:280px;font-size:13px"></pre> -->
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+  <script src="./Scripts/Resault.js"></script>
 </html>

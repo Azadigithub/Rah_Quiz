@@ -84,12 +84,13 @@ function renderQuestion() {
   questionEl.textContent = q.question;
   questionnumber.textContent = q.id;
   optionsEl.innerHTML = "";
+  // console.log(q);
 
   q.options.map((opt) => {
     const label = document.createElement("label");
     label.style.display = "block";
     label.innerHTML = `
-      <input type="radio" name="option" value="${opt.option}" ${
+      <input type="radio" name="option" value="${opt.value}" ${
       answers[currentQuestion] === opt ? "checked" : ""
     }> ${opt.text}
     `;
@@ -100,7 +101,11 @@ function renderQuestion() {
   radios.forEach((radio) => {
     radio.disabled = false;
     radio.addEventListener("change", () => {
-      answers[currentQuestion] = radio.value;
+      // answers[currentQuestion] = radio.value;
+      answers[currentQuestion] = {
+        question_id: questions[currentQuestion].id,
+        value: radio.value,
+      };
       radios.forEach((r) => (r.disabled = true));
 
       autoNextTimer = setTimeout(() => {
@@ -156,10 +161,10 @@ async function finishQuiz() {
     console.log("answers before save:", answers);
     localStorage.setItem("answers", JSON.stringify(answers));
     resultEl.innerHTML =
-      "<h4>پاسخ‌ها با موفقیت ارسال شدند ✅</h4><p />برای مشاهده نتایج لازمه وارد حساب کاربری بشی!<br/> <a href='./Login.html'> بزن بریم</a>";
+      "<h4>پاسخ‌ها با موفقیت ارسال شدند ✅</h4><p />برای مشاهده و دریافت نتایج فرم صفحه بعد رو تکمیل کنید!<br/> <a href='./Login.html'> بزن بریم</a>";
   } catch (err) {
     resultEl.innerHTML =
-      "<h4>پاسخ‌ها با موفقیت ارسال شدند ✅</h4><p />برای مشاهده نتایج لازمه وارد حساب کاربری بشی!<br/> <a href='./Login.html'> بزن بریم</a>";
+      "<h4>پاسخ‌ها با موفقیت ارسال شدند ✅</h4><p />برای مشاهده و دریافت نتایج فرم صفحه بعد رو تکمیل کنید!<br/> <a href='./Login.html'> بزن بریم</a>";
   }
 }
 
